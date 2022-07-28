@@ -1,0 +1,68 @@
+datasource postgres {
+  provider = "postgresql"
+  url      = env("POSTGRESQL_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  createdAt DateTime @default(now())
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     String[]
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
+
+model Asset {
+  assetType EnumAssetAssetType?
+  banner    Banner?             @relation(fields: [bannerId], references: [id])
+  bannerId  String?             @unique
+  createdAt DateTime            @default(now())
+  file      String?
+  id        String              @id @default(cuid())
+  updatedAt DateTime            @updatedAt
+}
+
+model BannerClient {
+  campaigns BannerCampaign[]
+  createdAt DateTime         @default(now())
+  id        String           @id @default(cuid())
+  name      String           @unique
+  updatedAt DateTime         @updatedAt
+}
+
+model BannerCampaign {
+  banners   Banner[]
+  client    BannerClient @relation(fields: [clientId], references: [id])
+  clientId  String
+  createdAt DateTime     @default(now())
+  id        String       @id @default(cuid())
+  updatedAt DateTime     @updatedAt
+}
+
+model Banner {
+  asset       Asset?
+  campaigns   BannerCampaign? @relation(fields: [campaignsId], references: [id])
+  campaignsId String?
+  createdAt   DateTime        @default(now())
+  id          String          @id @default(cuid())
+  size        EnumBannerSize
+  updatedAt   DateTime        @updatedAt
+}
+
+enum EnumAssetAssetType {
+  Image
+  Video
+  Document
+  Banner
+}
+
+enum EnumBannerSize {
+  V120x600
+  V300250
+}
